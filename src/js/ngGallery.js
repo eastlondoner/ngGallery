@@ -43,7 +43,7 @@
 			'  <a class="nav-left" ng-click="prevImage()"><i class="fa fa-angle-left"></i></a>' +
 			'  <img ondragstart="return false;" draggable="false" ng-src="{{ img }}" ng-click="nextImage()" ng-show="!loading" class="effect" />' +
 			'  <a class="nav-right" ng-click="nextImage()"><i class="fa fa-angle-right"></i></a>' +
-			'  <span class="info-text">{{ index + 1 }}/{{ images.length }} - {{ description }}</span>' +
+			'  <span class="info-text">{{ index + 1 }} of {{ images.length }}</span>' +
 			'  <div class="ng-thumbnails-wrapper">' +
 			'    <div class="ng-thumbnails slide-left">' +
 			'      <div ng-repeat="i in images">' +
@@ -69,10 +69,15 @@
 				if (scope.thumbsNum >= 11) {
 					scope.thumbsNum = 11;
 				}
+				
+				scope.$on("openNgGallery", function (event, index) {
+					//console.log('Received broadcast openNgGallery with index: ' + index);
+					scope.openGallery(index);
+				});
 
 				var $body = $document.find('body');
-				var $thumbwrapper = angular.element(document.querySelectorAll('.ng-thumbnails-wrapper'));
-				var $thumbnails = angular.element(document.querySelectorAll('.ng-thumbnails'));
+				var $thumbwrapper = angular.element(element[0].querySelectorAll('.ng-thumbnails-wrapper'));
+				var $thumbnails = angular.element(element[0].querySelectorAll('.ng-thumbnails'));
 
 				scope.index = 0;
 				scope.opened = false;
@@ -160,6 +165,9 @@
 
 				scope.closeGallery = function () {
 					scope.opened = false;
+					$timeout(function() {
+						scope.$emit("ngGalleryWasClosed");
+					}, 0.1);
 				};
 
 				$body.bind('keydown', function (event) {
